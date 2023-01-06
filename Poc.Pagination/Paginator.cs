@@ -24,5 +24,5 @@ internal class Paginator<T>
 
     public int PagesCount => (int)Math.Ceiling((double)Total / PageSize);
 
-    public List<T> Items => this.query.Skip(this.OffSet).Take(this.PageSize).ToList();
+    public IReadOnlyList<T> Items => this.query.Skip(this.OffSet).Take(this.PageSize).ToList().AsReadOnly();
 }
