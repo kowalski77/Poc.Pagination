@@ -1,14 +1,15 @@
 ﻿namespace Poc.Pagination;
 
-internal class Paginator<T>
+public sealed class Paginator<T>
 {
-    private readonly IQueryable<T> query;
-
-    public Paginator(IQueryable<T> query,
+    private IQueryable<T> Query { get; }
+    
+    internal Paginator(
+            IQueryable<T> query,
             int page,
             int pageSize)
     {
-        this.query = query.NonNull();
+        this.Query = query.NonNull();
         this.Page = page.NonNegativeOrZero();
         this.PageSize = pageSize.NonNegativeOrZero();
         this.Total = query.Count();
@@ -24,5 +25,13 @@ internal class Paginator<T>
 
     public int PagesCount => (int)Math.Ceiling((double)Total / PageSize);
 
-    public IReadOnlyList<T> Items => this.query.Skip(this.OffSet).Take(this.PageSize).ToList().AsReadOnly();
+    public IReadOnlyList<T> Items => this.Query.Skip(this.OffSet).Take(this.PageSize).ToList().AsReadOnly();
 }
+
+internal static class PaginatorExtensions
+{
+    public static Paginator<T> Paginate<T>(this IQueryable<T> query,
+            int page,
+            int pageSize) => new(query, page, pageSize);
+}
+
